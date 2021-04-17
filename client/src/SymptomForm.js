@@ -15,9 +15,11 @@ class SymptomForm extends React.Component {
   
     handleInputChange(event) {
         const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const value = target.value;
         const name = target.name;
-    
+
+        console.log("One change in state");
+
         this.setState({
           [name]: value
         });
@@ -40,61 +42,65 @@ class SymptomForm extends React.Component {
           // This was taken from script.js
           //symtpomsProposed Request
 
-          const body = this.symptoms.makeRequest(this.state.value);
-        }
-        catch(e){
+          this.symptoms.makeRequest(this.state);
+        } catch(e) {
+          console.log("-----------------------------------");
+          console.log("-----------------------------------");
+          console.log("There's an error mate!");
+          console.log("-----------------------------------");
           console.error(e);
         }
       }
-    }
+    };
   
     render() {
       return (
       <div id="symptom-form">
         <form onSubmit={this.handleSubmit} className="form">
-          <p class="required">* Required</p>
-          <div class="fieldSet">
+          <p className="required">* Required</p>
+          <div className="fieldSet">
             <fieldset>
               <legend>Patient Symptoms</legend>
-              <p class="form-group"><label class="field"><span>*</span>
+              <p className="form-group"><label className="field"><span>*</span>
                     First Name:
                     <input type="text" value={this.state.firstName} name="firstName" onChange={this.handleChange} placeholder="Enter Fist Name"/>
                 </label>
               </p>
-              <p  class="form-group"><label class="field"><span>*</span>
+              <p  className="form-group"><label className="field"><span>*</span>
                     Last Name:
                     <input type="text" value={this.state.lastName} name="lastName" onChange={this.handleChange}  placeholder="Enter Last Name"/>
                 </label>
               </p>
-              <p class="form-group"><label class="field"><span>*</span>
+              <p className="form-group"><label className="field"><span>*</span>
                     Birth Year:
                     <input type="text" value={this.state.birthYear} name="birthYear" aria-describedby="birthYearDesc" onChange={this.handleChange}  placeholder="Enter Birth Year"/>
                     <br/>
-                    <small id="birthYearDesc" class="form-text text-muted">The year you were born in '<b>YYYY</b>' format.</small>
+                    <small id="birthYearDesc" className="form-text text-muted">The year you were born in '<b>YYYY</b>' format.</small>
                 </label>
               </p>
-              <p class="form-group"><label class="field"><span>*</span>
+              <p className="form-group"><label className="field"><span>*</span>
                     Gender:
-                    <select value={this.state.gender} name="gender" onChange={this.handleChange}  placeholder="Select One">
+                    <select name="gender" onChange={this.handleChange}  defaultValue="Select One">
+                        <option value="Select One"></option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
                 </label>
               </p>
-              <p class="form-group"><label class="field"><span>*</span>
+              <p className="form-group"><label className="field"><span>*</span>
                     Symptoms:
                     <input type="text" value={this.state.symptoms} name="symptoms" onChange={this.handleChange}  placeholder="Enter Symptom ID"/>
                 </label>
               </p>
               
               </fieldset>
-              <button type="submit" class="btn-primary">Submit</button>
+              <button type="submit" className="btn-primary">Submit</button>
             </div>
           </form>
         </div>
       );
-    }
-  }
+    };
+}
 
 
 export default SymptomForm;
