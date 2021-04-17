@@ -1,12 +1,14 @@
 import './App.css';
 import React from 'react';
 import './SymptomForm.css';
+import symptomsProposed from './script.js';
 
 class SymptomForm extends React.Component {
     constructor(props) {
       super(props);
       this.state = {firstName: '', lastName: '', birthYear: '', gender: '', symptoms: ''};
-  
+      this.mappings = {firstName: "Enter Fist Name", lastName:"Enter Last Name",birthYear:"Enter Birth Year", gender:"Select One", symptoms:"Enter Symptom ID"}
+      this.symptoms = new symptomsProposed();
       this.handleChange = this.handleInputChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -22,33 +24,33 @@ class SymptomForm extends React.Component {
       }
   
     handleSubmit(event) {
-      alert('A name was submitted from ' + this.state.firstName + this.state.lastName);
-      event.preventDefault();
+      var valid = true;
+      Object.entries(this.state).forEach(([key, value]) => {
+        valid = valid && (value !== '' || value !== this.mappings[key]);
+      });
+
+      if(valid === false){
+        alert('Make sure that everything is inputted correctly! Try again')
+      }
+      else{
+        try{
+          alert('A name was submitted from ' + this.state.firstName + " " +  this.state.lastName
+        + "\nPlease wait for the MediAPI to send back your response!");
+          event.preventDefault();
+          // This was taken from script.js
+          //symtpomsProposed Request
+
+          const body = this.symptoms.makeRequest(this.state.value);
+        }
+        catch(e){
+          console.error(e);
+        }
+      }
     }
   
     render() {
       return (
       <div id="symptom-form">
-        {/* <form>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-          </div>
-          <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form> */}
-
-
-
-
         <form onSubmit={this.handleSubmit} className="form">
           <p class="required">* Required</p>
           <div class="fieldSet">
@@ -96,41 +98,3 @@ class SymptomForm extends React.Component {
 
 
 export default SymptomForm;
-
-
-// function Form() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <form>
-//             <label>
-//                 First Name:
-//                 <input type="text" name="first-name" />
-//             </label>
-//             <br/>
-//             <label>
-//                 Last Name:
-//                 <input type="text" name="last-name" />
-//             </label>
-//             <label>
-//                 Birth Year:
-//                 <input type="text" name="birth-year" />
-//             </label>
-//             <label>
-//                 Gender:
-//                 <input type="text" name="gender" />
-//             </label>
-//             <label>
-//                 Symptoms:
-//                 <input type="text" name="symptoms" />
-//             </label>
-//             <input type="submit" value="Submit" />
-//         </form>
-//       </header>
-//       <body>
-//       </body>
-//     </div>
-//   );
-// }
-
-// export default Form;
