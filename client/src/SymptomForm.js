@@ -1,18 +1,18 @@
 import './App.css';
 import React from 'react';
 import './SymptomForm.css';
-import symptomsProposed from './script.js';
+import Diagnosis from './script.js';
 
 class SymptomForm extends React.Component {
     constructor(props) {
       super(props);
       this.state = {firstName: '', lastName: '', birthYear: '', gender: '', symptoms: ''};
       this.mappings = {firstName: "Enter Fist Name", lastName:"Enter Last Name",birthYear:"Enter Birth Year", gender:"Select One", symptoms:"Enter Symptom ID"}
-      this.symptoms = new symptomsProposed();
+      this.symptoms = new Diagnosis();
       this.handleChange = this.handleInputChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
-  
+    
     handleInputChange(event) {
         const target = event.target;
         const value = target.value;
@@ -24,7 +24,7 @@ class SymptomForm extends React.Component {
           [name]: value
         });
       }
-  
+      
     handleSubmit(event) {
       var valid = true;
       Object.entries(this.state).forEach(([key, value]) => {
@@ -52,7 +52,7 @@ class SymptomForm extends React.Component {
         }
       }
     };
-  
+    
     render() {
       return (
       <div id="symptom-form">
