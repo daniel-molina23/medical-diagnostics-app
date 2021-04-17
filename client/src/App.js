@@ -1,23 +1,30 @@
-import logo from './logo.svg';
+// import background from './images/medical-cover.jfif';
+import doctor from './images/doctor-smiling.jfif';
+import heart from './images/heart.png';
 import './App.css';
+import './mysass.scss';
+
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={doctor} className="doctor" alt="background" />
+        <img src={heart} className="heart" alt="heart beat" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Welcome to your virtual medical assistant. <br/>
         </p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href=""
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Press to Start
         </a>
       </header>
+      <body>
+      </body>
     </div>
   );
 }
