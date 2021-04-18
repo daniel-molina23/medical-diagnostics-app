@@ -5,8 +5,7 @@ import './SymptomForm.css';
 import { Redirect } from 'react-router-dom';
 // import sampleResponse from './jsonStatic/sampleResponse.js';
 
-const fetch = require('node-fetch');
-
+// const fetch = require('node-fetch');
 class SymptomForm extends React.Component {
     constructor(props) {
       super(props);
@@ -21,6 +20,7 @@ class SymptomForm extends React.Component {
       // this.diagnostic = new Diagnosis();
       this.handleChange = this.handleInputChange.bind(this);
       this.toggleResults = this.toggleResults.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleInputChange(event) {
@@ -39,12 +39,11 @@ class SymptomForm extends React.Component {
       this.setState(state => ({ showResults: !state.showResults }));
     };
 
-    
     async MediAPICall({gender, symptoms, birthYear}){
-      const url = 'https://priaid-symptom-checker-v1.p.rapidapi.com/diagnosis';
+      const url = `https://priaid-symptom-checker-v1.p.rapidapi.com/diagnosis?symptoms=${symptoms}&gender=${gender}&year_of_birth=${birthYear}&language=en-gb`;
       const options  = {
         method: 'GET',
-        qs: {symptoms, gender, year_of_birth: birthYear, language: 'en-gb'},  //parameters for specified info
+        // qs: {symptoms, gender, year_of_birth: birthYear, language: 'en-gb'},  //parameters for specified info
         headers: {
           'x-rapidapi-key': 'ada0373128mshff83f2784144a0fp173715jsn1089a0cfb782',
           'x-rapidapi-host': 'priaid-symptom-checker-v1.p.rapidapi.com',
@@ -52,13 +51,10 @@ class SymptomForm extends React.Component {
           }
       };
       var here = false;
-      const result = fetch(url, options)
-        .then(res => {
-          this.state.results = res.json();
-          console.log("THIS ACTUALLY WENT THROUGH WITH VALUE: " + this.state.results)
-          here = true;
-        })
-      console.log("RESULT is : result" + result + " + here=" + here);
+      const response = await fetch(url, options);
+      const responseJSON = await response.json();
+      console.log('INSIDE API CALL ', responseJSON);
+      return responseJSON;
     }
 
 
@@ -76,39 +72,18 @@ class SymptomForm extends React.Component {
           alert('Thank you ' + this.state.firstName + " for your submission."
         + "\nPlease give us some time to process your request.");
           event.preventDefault();
+
+          console.log('BEFORE: ');
+          console.log('STATE SHOW RESULTS: ', this.state.showResults);
           
-          // function feedReducer(args){
-          //     return new Promise((res,rej)=>{
-          //     res(args);
-          //   })
-          // }
-
-          //pass body/results to a different webpage
-          // var res = await feedReducer(this.diagnostic.makeRequest(this.state));
-          // console.log(res)
-          // this.state.results = res;
-
-
-
-          // this.state.setState({results: this.diagnostic.makeRequest(this.state)});
-          // let temp = new Diagnosis();
-          // let json = this.state;
-
-          //Seperate
-          // async function asyncCall(){
-          //   return await asynchronousAPICall( () => this.diagnostic.makeRequest(this.state));
-          // }
-          
-          
-          // this.state.setState({results: asyncCall()});
-
-          this.MediAPICall(this.state)
+          this.state.results = await this.MediAPICall(this.state);
+          console.log('AFTER');
+          console.log('STATE SHOW RESULTS: ', this.state.showResults);
 
           if(this.state.results === '' || this.state.results === null){
             throw new Error("Invalid Request, did not go through!");
           }
-          
-          // switch to a different component
+          console.log('RENDER SHOULD BE UPDATED!!!');
           this.toggleResults();
         } catch(e) {
           alert("Sorry Request did not go through...");
@@ -118,6 +93,8 @@ class SymptomForm extends React.Component {
     };
     
     render() {
+      console.log('RENDER GETTING CALLED ');
+      console.log('INSIDE OF RENDER FUNC THIS STATE RESULTS: ', this.state.showResults);
       return (
       <div id="symptom-form" >
         <form onSubmit={this.handleSubmit} className="form">
@@ -162,7 +139,7 @@ class SymptomForm extends React.Component {
             </div>
           </form>
           <div>
-            {this.state.showResults && this.state.results !== null ? 
+            {this.state.showResults || this.state.results !== null ? 
               <Redirect to={{
                 pathname: "/results",
                 state: { results: this.state.results }
