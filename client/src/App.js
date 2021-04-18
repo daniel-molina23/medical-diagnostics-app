@@ -4,6 +4,7 @@ import heart from './images/heart.png';
 import './App.css';
 // import './mysass.scss';
 import SymptomForm from './SymptomForm';
+import ResultsPage from './ResultsPage';
 import {
   BrowserRouter,
   Switch,
@@ -48,6 +49,9 @@ function App() {
         <Route path="/patient-form" component={SymptomForm}>
           <SymptomForm />
         </Route>
+
+        {/* This last route is redirected from SymptomForm */}
+        <Route path="/results" component={ResultsPage} render={(props) => <ResultsPage {...props}/>}/>
       </Switch>
     </BrowserRouter>
   );

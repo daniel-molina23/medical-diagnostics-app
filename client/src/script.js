@@ -4,6 +4,34 @@ import React from 'react';
 const request = require('request');
 
 
+class Diagnosis extends React.Component{
+
+  constructor(props) {
+    super(props);
+    this.state = {firstName: '', lastName: '', birthYear: '', gender: '', symptoms: ''};
+    this.diagnosis = null;
+  }
+
+  makeRequest({firstName, lastName, birthYear, gender, symptoms}){
+    this.setState({firstName, lastName, birthYear, gender, symptoms});
+    console.log("The gender is: " + gender);
+    //diagnosis request
+    this.diagnosis = {
+      method: 'GET',
+      url: 'https://priaid-symptom-checker-v1.p.rapidapi.com/diagnosis',
+      qs: {symptoms, gender, year_of_birth: birthYear, language: 'en-gb'},  //parameters for specified info
+      headers: {
+        'x-rapidapi-key': 'ada0373128mshff83f2784144a0fp173715jsn1089a0cfb782',
+        'x-rapidapi-host': 'priaid-symptom-checker-v1.p.rapidapi.com',
+        useQueryString: true
+        }
+    };
+
+    return genericResponse('DIAGNOSIS PROPOSED',this.diagnosis);
+  }
+}
+
+
 class symptomsProposed extends React.Component{
   constructor(props) {
     super(props);
@@ -13,12 +41,13 @@ class symptomsProposed extends React.Component{
 
   makeRequest({firstName, lastName, birthYear, gender, symptoms}) {
     
-    this.setState(firstName, lastName, birthYear, gender, symptoms);
+    this.setState({firstName, lastName, birthYear, gender, symptoms});
+    console.log("The gender is: " + gender);
     
     this.symptomsProposed = {
       method: 'GET',
       url: 'https://priaid-symptom-checker-v1.p.rapidapi.com/symptoms/proposed',
-      qs: {gender, birthYear, language: 'en-gb', symptoms }, //parameters for specified info
+      qs: {gender, 'year_of_birth':birthYear, language: 'en-gb', symptoms }, //parameters for specified info
       headers: {
         'x-rapidapi-key': 'ada0373128mshff83f2784144a0fp173715jsn1089a0cfb782',
         'x-rapidapi-host': 'priaid-symptom-checker-v1.p.rapidapi.com',
@@ -39,12 +68,11 @@ function genericResponse(responseStringIdentifier, requestType){
     console.log('')
     console.log(responseStringIdentifier)
     console.log(body);
-    res.send(body);
     return body;
   });
 }
 
-export default symptomsProposed;
+export default Diagnosis;
 
 /*
 //symtpomsProposed Requst
@@ -149,20 +177,20 @@ request(options, function (error, response, body) {
 });
 */
 
-//requires the issues index to extract po
-const symptoms = {
-  method: 'GET',
-  url: 'https://priaid-symptom-checker-v1.p.rapidapi.com/symptoms',
-  qs: {language: 'en-gb', format: 'json'},
-  headers: {
-    'x-rapidapi-key': 'ada0373128mshff83f2784144a0fp173715jsn1089a0cfb782',
-    'x-rapidapi-host': 'priaid-symptom-checker-v1.p.rapidapi.com',
-    useQueryString: true
-  }
-};
+// //requires the issues index to extract po
+// const symptoms = {
+//   method: 'GET',
+//   url: 'https://priaid-symptom-checker-v1.p.rapidapi.com/symptoms',
+//   qs: {language: 'en-gb', format: 'json'},
+//   headers: {
+//     'x-rapidapi-key': 'ada0373128mshff83f2784144a0fp173715jsn1089a0cfb782',
+//     'x-rapidapi-host': 'priaid-symptom-checker-v1.p.rapidapi.com',
+//     useQueryString: true
+//   }
+// };
 
-request(symptoms, function (error, response, body) {
-	if (error) throw new Error(error);
+// request(symptoms, function (error, response, body) {
+// 	if (error) throw new Error(error);
 
-	console.log(body);
-});
+// 	console.log(body);
+// });
