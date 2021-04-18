@@ -5,7 +5,9 @@ import './SymptomForm.css';
 import { Redirect } from 'react-router-dom';
 // import sampleResponse from './jsonStatic/sampleResponse.js';
 
-// const fetch = require('node-fetch');
+const fetch = require('node-fetch');
+
+
 class SymptomForm extends React.Component {
     constructor(props) {
       super(props);
@@ -50,7 +52,6 @@ class SymptomForm extends React.Component {
           useQueryString: true
           }
       };
-      var here = false;
       const response = await fetch(url, options);
       const responseJSON = await response.json();
       console.log('INSIDE API CALL ', responseJSON);
