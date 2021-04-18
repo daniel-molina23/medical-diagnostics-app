@@ -1,9 +1,11 @@
 import './App.css';
 import React from 'react';
 import './SymptomForm.css';
-import Diagnosis from './script.js';
+// import Diagnosis from './script.js';
 import { Redirect } from 'react-router-dom';
-import sampleResponse from './jsonStatic/sampleResponse.js';
+// import sampleResponse from './jsonStatic/sampleResponse.js';
+
+const fetch = require('node-fetch');
 
 
 class SymptomForm extends React.Component {
@@ -17,11 +19,12 @@ class SymptomForm extends React.Component {
           showResults: false,
           results: null};
       this.mappings = {firstName: "Enter Fist Name", lastName:"Enter Last Name",birthYear:"Enter Birth Year", gender:"Select One", symptoms:"Enter Symptom ID"}
-      this.diagnostic = new Diagnosis();
+      // this.diagnostic = new Diagnosis();
       this.handleChange = this.handleInputChange.bind(this);
+      this.toggleResults = this.toggleResults.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
-    
+
     handleInputChange(event) {
         const target = event.target;
         const value = target.value;
@@ -34,16 +37,33 @@ class SymptomForm extends React.Component {
         });
       }
 
-    toggleResults = () => {
+    toggleResults() {
       this.setState(state => ({ showResults: !state.showResults }));
     };
 
-    
+    async MediAPICall({gender, symptoms, birthYear}){
+      const url = `https://priaid-symptom-checker-v1.p.rapidapi.com/diagnosis?symptoms=${symptoms}&gender=${gender}&year_of_birth=${birthYear}&language=en-gb`;
+      const options  = {
+        method: 'GET',
+        // qs: {symptoms, gender, year_of_birth: birthYear, language: 'en-gb'},  //parameters for specified info
+        headers: {
+          'x-rapidapi-key': 'ada0373128mshff83f2784144a0fp173715jsn1089a0cfb782',
+          'x-rapidapi-host': 'priaid-symptom-checker-v1.p.rapidapi.com',
+          useQueryString: true
+          }
+      };
+      const response = await fetch(url, options);
+      const responseJSON = await response.json();
+      console.log('INSIDE API CALL ', responseJSON);
+      return responseJSON;
+    }
+
+
     async handleSubmit(event) {
       var valid = true;
-      // Object.entries(this.state).forEach(([key, value]) => {
-      //   valid = valid && (value !== '' || value !== this.mappings[key]);
-      // });
+      Object.entries(this.state).forEach(([key, value]) => {
+        valid = valid && (value !== '' || value !== this.mappings[key]);
+      });
 
       if(valid === false){
         alert('Bad Input! Try again.');
@@ -53,37 +73,18 @@ class SymptomForm extends React.Component {
           alert('Thank you ' + this.state.firstName + " for your submission."
         + "\nPlease give us some time to process your request.");
           event.preventDefault();
+
+          console.log('BEFORE: ');
+          console.log('STATE SHOW RESULTS: ', this.state.showResults);
           
-          // function feedReducer(args){
-          //     return new Promise((res,rej)=>{
-          //     res(args);
-          //   })
-          // }
+          this.state.results = await this.MediAPICall(this.state);
+          console.log('AFTER');
+          console.log('STATE SHOW RESULTS: ', this.state.showResults);
 
-          //pass body/results to a different webpage
-          // var res = await feedReducer(this.diagnostic.makeRequest(this.state));
-          // console.log(res)
-          // this.state.results = res;
-
-
-
-          // this.state.setState({results: this.diagnostic.makeRequest(this.state)});
-          // let temp = new Diagnosis();
-          // let json = this.state;
-
-          //Seperate
-          // async function asyncCall(){
-          //   return await asynchronousAPICall( () => this.diagnostic.makeRequest(this.state));
-          // }
-          
-          
-          // this.state.setState({results: asyncCall()});
-
-          // if(this.state.results === '' || this.state.results === null){
-          //   throw new Error("Invalid Request, did not go through!");
-          // }
-          
-          // switch to a different component
+          if(this.state.results === '' || this.state.results === null){
+            throw new Error("Invalid Request, did not go through!");
+          }
+          console.log('RENDER SHOULD BE UPDATED!!!');
           this.toggleResults();
         } catch(e) {
           alert("Sorry Request did not go through...");
@@ -93,6 +94,8 @@ class SymptomForm extends React.Component {
     };
     
     render() {
+      console.log('RENDER GETTING CALLED ');
+      console.log('INSIDE OF RENDER FUNC THIS STATE RESULTS: ', this.state.showResults);
       return (
       <div id="symptom-form" >
         <form onSubmit={this.handleSubmit} className="form">
@@ -137,25 +140,16 @@ class SymptomForm extends React.Component {
             </div>
           </form>
           <div>
-            {this.state.showResults ? 
+            {this.state.showResults || this.state.results !== null ? 
               <Redirect to={{
                 pathname: "/results",
-                state: { results: sampleResponse }
+                state: { results: this.state.results }
               }}/> : <br />}
           </div>
         </div>
       );
     };
 }
-
-
-// function asynchronousAPICall() {
-//   return new Promise(executeAPICall => {
-//     setTimeout(() => {
-//       executeAPICall();
-//     }, 2000);
-//   });
-// }
 
 
 export default SymptomForm;
