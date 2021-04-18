@@ -3,6 +3,7 @@ import React from 'react';
 import './SymptomForm.css';
 import Diagnosis from './script.js';
 import { Redirect } from 'react-router-dom';
+import sampleResponse from './jsonStatic/sampleResponse.js';
 
 
 class SymptomForm extends React.Component {
@@ -38,14 +39,14 @@ class SymptomForm extends React.Component {
     };
 
     
-    handleSubmit(event) {
+    async handleSubmit(event) {
       var valid = true;
-      Object.entries(this.state).forEach(([key, value]) => {
-        valid = valid && (value !== '' || value !== this.mappings[key]);
-      });
+      // Object.entries(this.state).forEach(([key, value]) => {
+      //   valid = valid && (value !== '' || value !== this.mappings[key]);
+      // });
 
       if(valid === false){
-        alert('Bad Input! Try again');
+        alert('Bad Input! Try again.');
       }
       else{
         try{
@@ -53,22 +54,34 @@ class SymptomForm extends React.Component {
         + "\nPlease give us some time to process your request.");
           event.preventDefault();
           
+          // function feedReducer(args){
+          //     return new Promise((res,rej)=>{
+          //     res(args);
+          //   })
+          // }
+
           //pass body/results to a different webpage
+          // var res = await feedReducer(this.diagnostic.makeRequest(this.state));
+          // console.log(res)
+          // this.state.results = res;
+
+
+
           // this.state.setState({results: this.diagnostic.makeRequest(this.state)});
           // let temp = new Diagnosis();
           // let json = this.state;
 
           //Seperate
-          async function asyncCall(){
-            return await asynchronousAPICall( () => this.diagnostic.makeRequest(this.state));
-          }
+          // async function asyncCall(){
+          //   return await asynchronousAPICall( () => this.diagnostic.makeRequest(this.state));
+          // }
           
           
-          this.state.setState({results: asyncCall()});
+          // this.state.setState({results: asyncCall()});
 
-          if(this.state.results === '' || this.state.results === null){
-            throw new Error("Invalid Request, did not go through!");
-          }
+          // if(this.state.results === '' || this.state.results === null){
+          //   throw new Error("Invalid Request, did not go through!");
+          // }
           
           // switch to a different component
           this.toggleResults();
@@ -127,7 +140,7 @@ class SymptomForm extends React.Component {
             {this.state.showResults ? 
               <Redirect to={{
                 pathname: "/results",
-                state: { results: this.state.results }
+                state: { results: sampleResponse }
               }}/> : <br />}
           </div>
         </div>
@@ -136,13 +149,13 @@ class SymptomForm extends React.Component {
 }
 
 
-function asynchronousAPICall() {
-  return new Promise(executeAPICall => {
-    setTimeout(() => {
-      executeAPICall();
-    }, 2000);
-  });
-}
+// function asynchronousAPICall() {
+//   return new Promise(executeAPICall => {
+//     setTimeout(() => {
+//       executeAPICall();
+//     }, 2000);
+//   });
+// }
 
 
 export default SymptomForm;

@@ -11,8 +11,8 @@ class ResultsPage extends Component{
 
     componentDidMount(props){
         this.setState({results: this.props.location.state.results, isShow: true});
-        console.log('Props: \n' + props)
-        console.log("this.Props: \n" + this.props.location.state.results)
+        console.log("this.Props: \n" + this.props.location.state.results);
+        //use this.state.results to navigate with JSON response
     }
 
 
