@@ -2,13 +2,21 @@ import './App.css';
 import React from 'react';
 import './SymptomForm.css';
 import Diagnosis from './script.js';
+import { Redirect } from 'react-router-dom';
+
 
 class SymptomForm extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {firstName: '', lastName: '', birthYear: '', gender: '', symptoms: ''};
+      this.state = {firstName: '',
+          lastName: '',
+          birthYear: '',
+          gender: '',
+          symptoms: '',
+          showResults: false,
+          results: null};
       this.mappings = {firstName: "Enter Fist Name", lastName:"Enter Last Name",birthYear:"Enter Birth Year", gender:"Select One", symptoms:"Enter Symptom ID"}
-      this.symptoms = new Diagnosis();
+      this.diagnostic = new Diagnosis();
       this.handleChange = this.handleInputChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -18,13 +26,18 @@ class SymptomForm extends React.Component {
         const value = target.value;
         const name = target.name;
 
-        console.log("One change in state");
+        // console.log("One change in state");
 
         this.setState({
           [name]: value
         });
       }
-      
+
+    toggleResults = () => {
+      this.setState(state => ({ showResults: !state.showResults }));
+    };
+
+    
     handleSubmit(event) {
       var valid = true;
       Object.entries(this.state).forEach(([key, value]) => {
@@ -32,22 +45,35 @@ class SymptomForm extends React.Component {
       });
 
       if(valid === false){
-        alert('Make sure that everything is inputted correctly! Try again')
+        alert('Bad Input! Try again');
       }
       else{
         try{
-          alert('A name was submitted from ' + this.state.firstName + " " +  this.state.lastName
-        + "\nPlease wait for the MediAPI to send back your response!");
+          alert('Thank you ' + this.state.firstName + " for your submission."
+        + "\nPlease give us some time to process your request.");
           event.preventDefault();
-          // This was taken from script.js
-          //symtpomsProposed Request
+          
+          //pass body/results to a different webpage
+          // this.state.setState({results: this.diagnostic.makeRequest(this.state)});
+          // let temp = new Diagnosis();
+          // let json = this.state;
 
-          this.symptoms.makeRequest(this.state);
+          //Seperate
+          async function asyncCall(){
+            return await asynchronousAPICall( () => this.diagnostic.makeRequest(this.state));
+          }
+          
+          
+          this.state.setState({results: asyncCall()});
+
+          if(this.state.results === '' || this.state.results === null){
+            throw new Error("Invalid Request, did not go through!");
+          }
+          
+          // switch to a different component
+          this.toggleResults();
         } catch(e) {
-          console.log("-----------------------------------");
-          console.log("-----------------------------------");
-          console.log("There's an error mate!");
-          console.log("-----------------------------------");
+          alert("Sorry Request did not go through...");
           console.error(e);
         }
       }
@@ -55,7 +81,7 @@ class SymptomForm extends React.Component {
     
     render() {
       return (
-      <div id="symptom-form">
+      <div id="symptom-form" >
         <form onSubmit={this.handleSubmit} className="form">
           <p className="required">* Required</p>
           <div className="fieldSet">
@@ -97,9 +123,25 @@ class SymptomForm extends React.Component {
               <button type="submit" className="btn-primary">Submit</button>
             </div>
           </form>
+          <div>
+            {this.state.showResults ? 
+              <Redirect to={{
+                pathname: "/results",
+                state: { results: this.state.results }
+              }}/> : <br />}
+          </div>
         </div>
       );
     };
+}
+
+
+function asynchronousAPICall() {
+  return new Promise(executeAPICall => {
+    setTimeout(() => {
+      executeAPICall();
+    }, 2000);
+  });
 }
 
 
